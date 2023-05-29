@@ -3,7 +3,7 @@ LABEL maintainer="Tim Carrington <timiscarrington@gmail.com>"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirments.txt /tmp/requirments.txt
+COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN python -m venv /py && \
     rm -rf /tmp && \
     adduser \
         --disabled-password \
-        -- no-create-home \
+        --no-create-home \
         django-user
 
 ENV PATH="/py/bin:$PATH"
