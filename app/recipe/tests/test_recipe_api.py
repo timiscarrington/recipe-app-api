@@ -107,7 +107,7 @@ class PrivateRecipeApiTests(TestCase):
     def test_create_recipe(self):
         """Test creating a recipe"""
         payload = {
-            'title': 'Sample Recipe',
+            'title': 'Sample recipe',
             'time_minutes': 30,
             'price': Decimal('5.99'),
         }
@@ -117,4 +117,4 @@ class PrivateRecipeApiTests(TestCase):
         recipe = Recipe.objects.get(id=res.data['id'])
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
-            self.assertEqual(recipe.user, self.user)
+        self.assertEqual(recipe.user, self.user)
