@@ -176,17 +176,17 @@ class PrivateRecipeApiTests(TestCase):
         recipe.refresh_from_db()
         self.assertEqual(recipe.user, self.user)
 
-        def test_delete_recipe(self):
-            """Test deleting a recipe successful"""
-            recipe = create_recipe(user=self.user)
+    def test_delete_recipe(self):
+        """Test deleting a recipe successful"""
+        recipe = create_recipe(user=self.user)
 
-            url = detail_url(recipe.id)
-            res = self.client.delete(url)
+        url = detail_url(recipe.id)
+        res = self.client.delete(url)
 
-            self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-            self.assertFalse(Recipe.objects.filter(id=recipe).exists())
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Recipe.objects.filter(id=recipe).exists())
 
-    def test_recipe_other_users_recipe_errors(self):
+    def test_recipe_other_users_recipe_error(self):
         """Test trying to delete another users recipe gives error"""
         new_user = create_user(email='user2@example.com', password='test123')
         recipe = create_recipe(user=new_user)
@@ -227,17 +227,17 @@ class PrivateRecipeApiTests(TestCase):
             'time_minutes': 60,
             'price': Decimal('4.50'),
             'tags': [{'name': 'Indian'}, {'name': 'Breakfast'}],
-    }
+        }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
-        self.assertEqual(res.status_code, status.HTTPS_201_CREATED)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         recipes = Recipe.objects.filter(user=self.user)
         self.assertEqual(recipes.count(), 1)
         recipe = recipes[0]
         self.assertEqual(recipe.tags.count(), 2)
         self.assertIn(tag_indian, recipe.tags.all())
         for tag in payload['tags']:
-        exists = recipe.tags.filter(
+            exists = recipe.tags.filter(
             name=tag['name'],
             user=self.user,
             ).exists()
@@ -261,7 +261,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe = create_recipe(user=self.user)
         recipe.tags.add(tag_breakfast)
 
-        tag_lunch = Tag.objecgts.create(user=self.user, name='Lunch')
+        tag_lunch = Tag.objects.create(user=self.user, name='Lunch')
         payload = {'tags': [{'name': 'Lunch'}]}
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload, format='json')
