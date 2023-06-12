@@ -70,17 +70,17 @@ class PrivateRecipeApiTests(TestCase):
         self.user = create_user(email='user@example.com', password='test123')
         self.client.force_authenticate(self.user)
 
-        def test_retrive_recipes(self):
-            """Test retriving recipes"""
-            create_recipe(user=self.user)
-            create_recipe(user=self.user)
+    def test_retrive_recipes(self):
+        """Test retriving recipes"""
+        create_recipe(user=self.user)
+        create_recipe(user=self.user)
 
-            res = self.client.get(RECIPES_URL)
+        res = self.client.get(RECIPES_URL)
 
-            recipes = Recipe.objects.all().order_by('-id')
-            serializer = RecipeSerializer(recipes, many=True)
-            self.assertEqual(res.status_code, status.HTTP_200_OK)
-            self.assertEqual(res.data, serializer.data)
+        recipes = Recipe.objects.all().order_by('-id')
+        serializer = RecipeSerializer(recipes, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
 
     def test_recipe_list_limited_to_user(self):
         """Test list of recipes is limited to authenticated user."""
@@ -184,7 +184,7 @@ class PrivateRecipeApiTests(TestCase):
         res = self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Recipe.objects.filter(id=recipe).exists())
+        self.assertFalse(Recipe.objects.filter(id=recipe.id).exists())
 
     def test_recipe_other_users_recipe_error(self):
         """Test trying to delete another users recipe gives error"""
@@ -272,7 +272,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_clear_recipe_tags(self):
         """Test clearing a recipe's tags"""
-        tag = Tag.objects.crete(user=self.user, name='Dessert')
+        tag = Tag.objects.create(user=self.user, name='Dessert')
         recipe = create_recipe(user=self.user)
         recipe.tags.add(tag)
 
