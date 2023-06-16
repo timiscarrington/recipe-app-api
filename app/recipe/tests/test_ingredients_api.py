@@ -13,7 +13,7 @@ from core.models import Ingredient
 from recipe.serializers import IngredientSerializer
 
 
-INGREDIENTS_URL = reverse('recipe:ingredients-list')
+INGREDIENTS_URL = reverse('recipe:ingredient-list')
 
 def create_user(email='user@example.com', password='testpass123'):
     """Create and return user."""
