@@ -25,7 +25,7 @@ from recipe.serializers import (
     RecipeDetailSerializer,
 )
 
-RECIPES_URL = reverse('recipe:recipe-upload-image', args=[recipe_id])
+RECIPES_URL = reverse('recipe:recipe-list')
 
 
 def detail_url(recipe_id):
@@ -35,7 +35,7 @@ def detail_url(recipe_id):
 
 def image_upoload_url(recipe_id):
     """Create and return image url"""
-    return reverse('recipe:recipe-uploade')
+    return reverse('recipe:recipe-upload-image', args=[recipe_id])
 
 
 def create_recipe(user, **params):
@@ -404,7 +404,7 @@ class ImageUploadTests(TestCase):
             res = self.client.post(url, payload, format='multipart')
 
         self.recipe.refresh_from_db()
-        self.assertEqual(res.status_code, status.HTTP_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('image', res.data)
         self.assertTrue(os.path.exists(self.recipe.image.path))
 
@@ -412,6 +412,6 @@ class ImageUploadTests(TestCase):
         """Test uploading invalid image"""
         url = image_upoload_url(self.recipe.id)
         payload = {'image': 'notanimage'}
-        res = self.client.post(url, payload, format='multippart')
+        res = self.client.post(url, payload, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
