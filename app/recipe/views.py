@@ -21,8 +21,10 @@ from core.models import (
     Recipe,
     Tag,
     Ingredient,
+    MealPlan
 )
 from recipe import serializers
+from recipe.serializers import MealPlanSerializer
 
 @extend_schema_view(
     list=extend_schema(
@@ -133,3 +135,23 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
         """Manage ingredients in the database"""
         serializer_class = serializers.IngredientSerializer
         queryset = Ingredient.objects.all()
+
+
+class MealPlanViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """Manage meal plans in the database"""
+    serializer_class = MealPlanSerializer
+    queryset = MealPlan.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Filter queryset to authenticated user."""
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """Create a new meal plan"""
+        serializer.save(user=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete a meal plan"""
+        return super().destroy(request, *args, **kwargs)

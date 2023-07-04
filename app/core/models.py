@@ -97,7 +97,7 @@ class Ingredient(models.Model):
         return self.name
 
 class MealPlan(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     recipes = models.ManyToManyField('Recipe', related_name='meal_plans')

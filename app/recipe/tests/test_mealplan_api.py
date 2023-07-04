@@ -6,15 +6,16 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import MealPlan, Recipe
-
+from core.models import MealPlan
 from recipe.serializers import MealPlanSerializer
 
 MEAL_PLAN_URL = reverse('recipe:mealplan-list')
 
+
 def create_user(email='user@example.com', password='testpass123'):
     """Create and return a user"""
     return get_user_model().objects.create_user(email=email, password=password)
+
 
 class PublicMealPlanApiTests(TestCase):
     """Test unauthenticated API requests for MealPlan"""
@@ -25,7 +26,6 @@ class PublicMealPlanApiTests(TestCase):
     def test_auth_required(self):
         """Test auth is required for retrieving meal plans"""
         res = self.client.get(MEAL_PLAN_URL)
-
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -100,6 +100,10 @@ class PrivateMealPlanApiTests(TestCase):
         res = self.client.post(MEAL_PLAN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            res.data['non_field_errors'][0],
+            "End date must be greater than or equal to start date."
+        )
 
     def test_update_meal_plan(self):
         """Test updating a meal plan"""
@@ -132,4 +136,3 @@ class PrivateMealPlanApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(MealPlan.objects.filter(id=meal_plan.id).exists())
-

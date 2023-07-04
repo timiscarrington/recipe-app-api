@@ -3,10 +3,12 @@ Serializers for Recipe APIs
 """
 from rest_framework import serializers
 
+
 from core.models import (
     Recipe,
     Tag,
     Ingredient,
+    MealPlan
 )
 
 
@@ -100,3 +102,14 @@ class RecipeImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
         read_only_fields = ['id']
         extra_kwargs = {'image': {'required': 'True'}}
+
+class MealPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MealPlan
+        fields = ['id', 'start_date', 'end_date', 'recipes']
+        read_only_fields = ['id']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['recipes'] = RecipeSerializer(instance.recipes.all(), many=True).data
+        return representation
