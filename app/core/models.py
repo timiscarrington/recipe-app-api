@@ -4,6 +4,8 @@ Database Models
 import uuid
 import os
 
+from django.contrib.auth import get_user_model
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
@@ -93,3 +95,23 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
+
+class MealPlan(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    recipes = models.ManyToManyField('Recipe', related_name='meal_plans')
+
+
+    def generate_shopping_list(self):
+        shopping_list = {}
+        for recipe in self.recipes.all():
+            for ingredient in recipe.ingredients.all():
+                if ingredient.name not in shopping_list:
+                    shopping_list[ingredient.name] = ingredient.amount
+                else:
+                    shopping_list[ingredient.name] += ingredient.amount
+        return shopping_list
+
+    def __str__(self):
+        return f'Meal Plan {self.start_date} - {self.end_date}'
